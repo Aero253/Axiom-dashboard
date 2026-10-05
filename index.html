@@ -106,6 +106,36 @@ button,input,textarea,select{font:inherit;color:inherit}
 body.editing .rz{display:block}
 .szb{position:absolute; right:42px; bottom:10px; z-index:4; font:600 11px/1 var(--f-mono); background:var(--ink); color:var(--bg); padding:6px 9px; border-radius:999px; pointer-events:none; white-space:nowrap}
 body.dragging-now, body.dragging-now *{user-select:none; -webkit-user-select:none}
+/* year countdown */
+#yrBody{display:grid; gap:12px}
+.yr-top{display:flex; align-items:flex-end; justify-content:space-between; gap:10px; flex-wrap:wrap}
+.yr-clock{font:800 clamp(22px, 9cqi, 34px)/1 var(--f-led); font-variant-numeric:tabular-nums}
+.yr-grid{display:grid; gap:4px}
+.yr-row{display:grid; grid-template-columns:2.4em minmax(0,1fr); align-items:center; gap:6px}
+.yr-row .m{font:600 9px/1 var(--f-mono); letter-spacing:.08em; color:var(--dim)}
+.yr-row.cur .m{color:var(--ink)}
+.yr-dots{display:grid; grid-template-columns:repeat(31, minmax(0,1fr)); gap:2px}
+.yr-dots i{aspect-ratio:1; border-radius:50%; background:var(--unlit)}
+.yr-dots i.g{background:var(--ink)}
+.yr-dots i.al{background:transparent; box-shadow:inset 0 0 0 1.4px var(--ink)}
+.yr-dots i.g.al{background:var(--ink)}
+.yr-dots i.ev{background:radial-gradient(circle, var(--ink) 0 28%, transparent 34%); box-shadow:inset 0 0 0 1.4px var(--ink)}
+.yr-dots i.t{background:var(--ink); box-shadow:0 0 0 2px var(--panel), 0 0 0 3.5px var(--ink); animation:today 1.6s ease-in-out infinite}
+@keyframes today{50%{box-shadow:0 0 0 2px var(--panel), 0 0 0 5px color-mix(in srgb, var(--ink) 25%, transparent)}}
+.yr-key{display:flex; gap:12px; flex-wrap:wrap; font:500 10px/1 var(--f-mono); color:var(--dim); letter-spacing:.06em; text-transform:uppercase}
+.yr-key span{display:inline-flex; align-items:center; gap:5px}
+.yr-key i{width:8px; height:8px; border-radius:50%; display:inline-block}
+.yr-flip{display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:6px}
+.yr-flip div{background:var(--raise); border:1px solid var(--line); border-radius:8px; padding:12px 2px 8px; text-align:center; position:relative; overflow:hidden; display:grid; gap:6px}
+.yr-flip div::after{content:""; position:absolute; left:0; right:0; top:calc(50% - 6px); border-top:1.5px solid var(--panel)}
+.yr-flip b{display:block; font:900 clamp(24px, 10cqi, 52px)/1 var(--f-led); font-variant-numeric:tabular-nums}
+.yr-flip > div > span{font:600 9px/1 var(--f-mono); letter-spacing:.12em; color:var(--dim); text-transform:uppercase}
+.yr-months{display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:2px; text-align:center}
+.yr-months i{display:block; width:11px; height:11px; margin:0 auto 5px; border-radius:50%; box-sizing:border-box; border:1.5px solid var(--ink)}
+.yr-months i.done{background:var(--ink)}
+.yr-months i.cur{background:linear-gradient(90deg, var(--ink) var(--f,50%), transparent var(--f,50%))}
+.yr-months span{font:600 9px/1 var(--f-mono); color:var(--dim)}
+.yr-months .now span{color:var(--ink)}
 /* tools */
 .fld{display:grid; gap:4px; min-width:0}
 .fld .inp{width:100%}
@@ -365,10 +395,81 @@ textarea.notes{width:100%; min-height:180px; resize:vertical; border:1px solid v
 .wclk .c small{display:block; font-weight:400; color:var(--dim); font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
 .wclk .t{font:800 24px/1 var(--f-led); font-variant-numeric:tabular-nums}
 .wclk .o{font:500 11px/1.2 var(--f-mono); color:var(--dim); text-align:right; min-width:5.5em}
-@media (prefers-reduced-motion: reduce){ *{transition:none!important; animation:none!important} }
+/* ---- motion ---- */
+.dm circle{transform-box:fill-box; transform-origin:center}
+.dm .n{animation:pop .42s cubic-bezier(.2,1.5,.4,1) both}                 /* a digit that just changed */
+.dm .cl{animation:colon 1s steps(1) infinite}                             /* clock colon blinks with the seconds */
+@keyframes pop{from{transform:scale(.15); opacity:.15}}
+@keyframes colon{50%{opacity:.15}}
+@keyframes rise{from{opacity:0; transform:translateY(14px) scale(.985)}}
+@keyframes wipe{from{clip-path:inset(0 100% 0 0)}}
+@keyframes lit{from{background:var(--unlit); transform:scale(.4)}}
+body.booting .w:not([hidden]) .wi{animation:rise .55s cubic-bezier(.2,.7,.2,1) both; animation-delay:calc(var(--i,0) * 45ms)}
+body.booting .dm svg{animation:wipe .7s steps(9, end) both; animation-delay:calc(var(--i,0) * 45ms + 140ms)}
+body.booting .dbar i.on{animation:lit .35s cubic-bezier(.2,1.4,.4,1) both; animation-delay:calc(var(--k,0) * 28ms + var(--i,0) * 45ms + 300ms)}
+.cal.wave .cell{animation:rise .38s cubic-bezier(.2,.7,.2,1) both; animation-delay:calc(var(--k,0) * 22ms)}
+.it.just .ck::after{animation:pop .4s cubic-bezier(.2,1.6,.4,1) both}
+.it.just .tx{animation:strike .35s ease-out both}
+@keyframes strike{from{opacity:.4}}
+.btn{transition:transform .12s ease, background-color .15s ease, border-color .15s ease}
+.btn:active{transform:scale(.96)}
+.sync[data-s="synced"]::before{animation:breathe 2.6s ease-in-out infinite}
+@keyframes breathe{50%{opacity:.35}}
+/* weather icons */
+.dm-ray{animation:ray 2.4s ease-in-out infinite}
+@keyframes ray{50%{opacity:.3}}
+.dm-drop{animation:drop 1.1s linear infinite; animation-delay:var(--d,0s)}
+@keyframes drop{0%,100%{opacity:.15} 25%{opacity:1}}
+.dm-bolt{animation:bolt 3.2s steps(1) infinite}
+@keyframes bolt{0%{opacity:1} 4%{opacity:.1} 8%{opacity:1} 12%{opacity:.1} 16%{opacity:1}}
+/* edit mode: widgets jiggle like the iPhone home screen */
+body.editing .w:not(.dragging) .wi{animation:jiggle .3s ease-in-out infinite alternate; animation-delay:calc(var(--i,0) * -83ms)}
+@keyframes jiggle{from{transform:rotate(-.3deg)} to{transform:rotate(.3deg)}}
+body.editing .w:hover .wi, body.dragging-now .wi{animation-play-state:paused}
+/* LED ticker */
+#pTicker{padding-block:12px; padding-inline:0; overflow:hidden; gap:0}
+.tkv{overflow:hidden; -webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent); mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent)}
+.tkt{display:flex; width:max-content; font:700 26px/1.25 var(--f-led); animation:tick var(--dur,40s) linear infinite}
+.tkw{padding-right:3em; white-space:nowrap}
+#pTicker:hover .tkt, #pTicker:focus-within .tkt{animation-play-state:paused}
+@keyframes tick{to{transform:translateX(-50%)}}
+/* ---- Max motion ---- */
+#bgdots{position:fixed; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; display:none}
+body.m-max #bgdots{display:block}
+body.m-max{background-image:none}
+.wrap{position:relative; z-index:1}
+#splash{position:fixed; inset:0; z-index:100; background:var(--bg); transition:opacity .5s ease; cursor:pointer}
+#splash.out{opacity:0; pointer-events:none}
+#splash canvas{width:100%; height:100%; display:block}
+/* widgets tilt toward the pointer with a soft light following it (mouse and trackpad) */
+body.m-max .wi::after{content:""; position:absolute; inset:0; border-radius:var(--r); pointer-events:none; opacity:0; transition:opacity .35s; z-index:5;
+  background:radial-gradient(380px circle at var(--mx,50%) var(--my,50%), color-mix(in srgb, var(--ink) 10%, transparent), transparent 62%)}
+@media (hover:hover) and (pointer:fine){
+  body.m-max:not(.editing):not(.booting) .wi{transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+  body.m-max:not(.editing):not(.booting) .wi:hover{transform:perspective(1000px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) scale(1.012)}
+  body.m-max:not(.editing) .wi:hover::after{opacity:1}
+}
+/* page-flip when the shown day or weather city changes */
+@keyframes flipIn{from{transform:perspective(800px) rotateX(-75deg); opacity:0}}
+body.m-max .flip > *{animation:flipIn .5s cubic-bezier(.2,.9,.25,1.1) both}
+body.m-max .flip > *:nth-child(2){animation-delay:.05s} body.m-max .flip > *:nth-child(3){animation-delay:.1s} body.m-max .flip > *:nth-child(n+4){animation-delay:.15s}
+/* rain and lightning behind the weather widget */
+#pWx{position:relative; overflow:hidden}
+#pWx > *{position:relative; z-index:1}
+body.m-max #pWx[data-rain]::before{content:""; position:absolute; inset:-30px 0 0 0; z-index:0; pointer-events:none; opacity:.55;
+  background-image:radial-gradient(circle, color-mix(in srgb, var(--ink) 40%, transparent) 1.1px, transparent 1.6px), radial-gradient(circle, color-mix(in srgb, var(--ink) 25%, transparent) 1px, transparent 1.5px);
+  background-size:18px 26px, 11px 19px; background-position:0 0, 7px 9px; animation:rainfall .8s linear infinite;
+  -webkit-mask-image:linear-gradient(transparent, #000 30%, #000 70%, transparent); mask-image:linear-gradient(transparent, #000 30%, #000 70%, transparent)}
+@keyframes rainfall{to{background-position:-6px 26px, 1px 28px}}
+body.m-max #pWx[data-rain="2"]::after{content:""; position:absolute; inset:0; z-index:0; pointer-events:none; background:var(--ink); opacity:0; animation:flash 7s steps(1) infinite}
+@keyframes flash{0%{opacity:0} 61%{opacity:.14} 62%{opacity:0} 64%{opacity:.09} 65%{opacity:0}}
+body.m-max .tkt{font-size:30px}
+body.calm *, body.calm *::before, body.calm *::after{animation:none!important; transition:none!important}
 </style>
 </head>
-<body>
+<body class="booting">
+<canvas id="bgdots" aria-hidden="true"></canvas>
+<div id="splash" hidden aria-hidden="true"><canvas id="splashCv"></canvas></div>
 <div class="wrap">
   <header class="top">
     <div class="brand"><i aria-hidden="true"><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b><b></b></i>Axiom</div>
@@ -377,7 +478,8 @@ textarea.notes{width:100%; min-height:180px; resize:vertical; border:1px solid v
       <button class="btn" id="editB" aria-pressed="false">Edit layout</button>
       <button class="btn ghost icon" id="menuB" aria-expanded="false" aria-controls="menu" aria-label="More">⋯</button>
       <div class="menu" id="menu" hidden>
-        <button class="btn ghost" id="themeB">Theme: Auto</button>
+        <button class="btn ghost" id="themeB">Theme: Dark</button>
+        <button class="btn ghost" id="motionB">Motion: Full</button>
         <button class="btn ghost" id="backupB">Back up data</button>
         <button class="btn ghost" id="restoreB">Restore from backup</button>
       </div>
@@ -512,6 +614,15 @@ textarea.notes{width:100%; min-height:180px; resize:vertical; border:1px solid v
     <div class="w" data-w="sun"><section class="p" id="pSun" aria-label="Sunrise and sunset">
       <div class="ph"><h2>Sun</h2><span class="lbl">Local time · today</span></div>
       <ul class="sun" id="sunList"></ul>
+    </section></div>
+
+    <div class="w" data-w="ticker"><section class="p" id="pTicker" aria-label="LED ticker">
+      <div class="tkv"><div class="tkt" id="tkText"></div></div>
+    </section></div>
+
+    <div class="w" data-w="year"><section class="p" id="pYear" aria-label="Year countdown">
+      <div class="ph"><h2 id="yrTitle">2026</h2><div class="wxtabs" id="yrMode"><button class="tab" data-yr="dots">Dots</button><button class="tab" data-yr="flip">Countdown</button></div></div>
+      <div id="yrBody"></div>
     </section></div>
 
     <div class="w" data-w="fdp"><section class="p" id="pFdp" aria-label="Max FDP calculator">
@@ -666,32 +777,60 @@ const DMF = (() => {
   add('!', '1,1,1,1,1,0,1'); add('?', '01110,10001,00001,00010,00100,00000,00100'); add('&', '01100,10010,10100,01000,10101,10010,01101');
   add('#', '01010,01010,11111,01010,11111,01010,01010'); add('…', '00000,00000,00000,00000,00000,00000,10101');
   const cache = new Map();
-  function svg(word, unlit) {
-    const key = word + (unlit ? '\u0001' : ''); if (cache.has(key)) return cache.get(key);
-    let x = 0, c = '';
+  function svg(word, unlit, mask = '') {
+    const key = word + (unlit ? '\u0001' : '') + mask; if (cache.has(key)) return cache.get(key);
+    let x = 0, c = '', j = 0;
     for (const ch of word) {
       const rows = g[ch] || g[ch.toUpperCase()] || g['?'], w = rows[0].length;
-      rows.forEach((r, y) => { for (let i = 0; i < w; i++) { if (r[i] === '1') c += `<circle cx="${x + i + .5}" cy="${y + .5}" r=".43"/>`; else if (unlit) c += `<circle class="u" cx="${x + i + .5}" cy="${y + .5}" r=".43"/>`; } });
-      x += w + 1;
+      const cls = unlit && ch === ':' ? ' class="cl"' : mask[j] === '1' ? ' class="n"' : '';
+      rows.forEach((r, y) => { for (let i = 0; i < w; i++) { if (r[i] === '1') c += `<circle${cls} cx="${x + i + .5}" cy="${y + .5}" r=".43"/>`; else if (unlit) c += `<circle class="u" cx="${x + i + .5}" cy="${y + .5}" r=".43"/>`; } });
+      x += w + 1; j++;
     }
     const W = Math.max(1, x - 1), out = `<svg viewBox="0 0 ${W} 7" style="width:${(.74 * W / 7).toFixed(3)}em" aria-hidden="true" focusable="false">${c}</svg>`;
     if (cache.size > 2000) cache.clear();
     cache.set(key, out); return out;
   }
-  const isLed = new WeakMap();
+  const isLed = new WeakMap(), prevM = new Map();
+  // remember what each live display showed last, by a stable name, so only the digits that changed pop (the seconds span is rebuilt every tick)
+  const pkey = el => { if (el.id) return el.id; const root = el.closest('[id]'), sel = el.tagName + (el.className ? '.' + String(el.className).trim().split(/\s+/).join('.') : '');
+    return (root ? root.id : '') + '|' + sel + '|' + (root ? [...root.querySelectorAll(sel)].indexOf(el) : 0); };
+  // split-flap: on Max, values that change shuffle through random characters before settling, like a departure board
+  const FLIP = '.next .cd, .fr .v, .stat .v, .calnav .m, .dhead, .bign, .kv .v, .wclk .t, .cdl .n, .sun .t, .fxl .v, .agb .dd, .kvl li b, .wxnow .t, .ph h2, .brand';
+  const POOL_D = '0123456789', POOL_A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  function scramble(sp, word) {
+    let n = 0; const frames = 6 + (Math.random() * 6 | 0);
+    const step = () => {
+      const old = sp.querySelector('svg'); if (!sp.isConnected || !old) return;
+      if (n >= frames) { old.outerHTML = svg(word, false); return; }
+      const settled = Math.floor(word.length * n / frames);
+      const w = [...word].map((ch, i) => i < settled ? ch : /\d/.test(ch) ? POOL_D[Math.random() * 10 | 0] : /[A-Z]/.test(ch) ? POOL_A[Math.random() * 26 | 0] : ch).join('');
+      old.outerHTML = svg(w, false); n++; setTimeout(step, 42);
+    };
+    step();
+  }
+  const prev = { get: el => prevM.get(pkey(el)), set: (el, v) => prevM.set(pkey(el), v) };
   const led = el => { let v = isLed.get(el); if (v === undefined) { v = /Axiom LED/.test(getComputedStyle(el).fontFamily); isLed.set(el, v); } return v; };
   function text(tn) {
     const el = tn.parentElement;
     if (!el || !tn.isConnected || !tn.nodeValue.trim() || el.closest('.dm, svg, script, style, textarea, select, option, title') || !led(el)) return;
-    const unlit = !!el.closest('.big, .tmr'), f = document.createDocumentFragment();
+    const unlit = !!el.closest('.big, .tmr, .yr-flip b'), f = document.createDocumentFragment();
+    const max = document.body.classList.contains('m-max'), flip = max && !unlit && !!el.closest(FLIP);
+    const live = unlit || flip || !!el.closest('.next .cd, .bign, #yrClock'), before = live ? prev.get(el) : null, now = [], toFlip = [];
+    let wi = 0;
     tn.nodeValue.split(/(\s+)/).forEach(part => {
       if (!part) return;
       if (/^\s+$/.test(part)) { f.appendChild(document.createTextNode(' ')); return; }
+      const word = part.toUpperCase(), old = before ? before[wi] : undefined;
+      const mask = live && old !== undefined ? [...word].map((ch, k) => old[k] === ch ? '0' : '1').join('') : ''; // pop only the digits that changed
+      now.push(word); wi++;
       const sp = document.createElement('span'); sp.className = 'dm';
-      sp.innerHTML = svg(part.toUpperCase(), unlit) + `<span class="sr">${part.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]))}</span>`;
+      if (flip && (old === undefined ? document.body.classList.contains('booting') || !before : old !== word) && !el.closest('.ph h2, .brand') || (flip && el.closest('.ph h2, .brand') && document.body.classList.contains('booting') && old === undefined)) toFlip.push([sp, word]);
+      sp.innerHTML = svg(word, unlit, mask.includes('1') ? mask : '') + `<span class="sr">${part.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]))}</span>`;
       f.appendChild(sp);
     });
+    if (live) prev.set(el, now);
     tn.replaceWith(f);
+    toFlip.forEach(([sp, w], i) => setTimeout(() => scramble(sp, w), i * 30));
   }
   function walk(root) {
     if (root.nodeType === 3) return text(root);
@@ -709,7 +848,9 @@ const DMF = (() => {
     }
     if (!raf) raf = requestAnimationFrame(flush); // redraw within the same frame the text changed
   }).observe(document.body, { childList: true, subtree: true, characterData: true });
-  return { walk };
+  // shuffle every board value at once (used right after the boot splash)
+  function flipAll() { let i = 0; document.querySelectorAll(FLIP).forEach(el => el.querySelectorAll(':scope .dm').forEach(sp => { const w = (sp.querySelector('.sr') || {}).textContent; if (w && !sp.closest('.big, .tmr')) setTimeout(() => scramble(sp, w.toUpperCase()), Math.min(600, i++ * 6)); })); }
+  return { walk, flipAll, glyph: ch => g[ch] };
 })();
 
 /* ---------- airports (IATA → lat, lon, city) ---------- */
@@ -876,7 +1017,7 @@ function applyBody(k, b) {
   else if (OBJ_DOCS.includes(k)) { if (b.data && typeof b.data === 'object') S[k] = { ...S[k], ...JSON.parse(JSON.stringify(b.data)) }; }
   else if (Array.isArray(b.items)) S[k] = JSON.parse(JSON.stringify(b.items));
 }
-function save(k) { canStore = lsSet(k, bodyOf(k)); setSync(); }
+function save(k) { canStore = lsSet(k, bodyOf(k)); setSync(); if (typeof queueTicker === 'function') queueTicker(); }
 function setSync() {
   const el = $('#sync'); requestAnimationFrame(() => el.setAttribute('aria-label', el.textContent)); el.title = '';
   if (!canStore) { el.dataset.s = 'error'; el.textContent = 'Can’t save — browser storage is off'; return; }
@@ -913,9 +1054,12 @@ async function restore(file) {
 }
 
 /* theme: auto / light / dark */
-const THEMES = ['auto', 'light', 'dark'];
+const THEMES = ['light', 'dark'];
+// first visit (or an old 'auto' choice) starts from the phone's own setting; after that it's whatever you pick
+const themeNow = () => { const t = lsGet('theme'); return t === 'light' || t === 'dark' ? t : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'; };
 function applyTheme(t) {
-  if (t === 'auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.dataset.theme = t;
+  document.documentElement.dataset.theme = t;
+  document.querySelectorAll('meta[name=theme-color]').forEach(m => m.content = t === 'dark' ? '#000000' : '#ffffff');
   $('#themeB').textContent = 'Theme: ' + t[0].toUpperCase() + t.slice(1);
   $('#themeB').setAttribute('aria-label', `Theme: ${t}. Change theme`);
   if (typeof G !== 'undefined') G.colors = null;
@@ -931,7 +1075,8 @@ function tick() {
   const t = isoOf(b);
   $('#dateV').textContent = longDate(t);
   $('#wkV').textContent = 'W' + pad(isoWeek(t));
-  if (b.getUTCMinutes() !== lastMin) { lastMin = b.getUTCMinutes(); renderNext(); renderWorld(); renderFtl(); renderWake(); renderLay(); if (b.getUTCHours() === 0 && b.getUTCMinutes() === 0) { renderAgenda(); renderCount(); renderSun(); renderCal(); renderDocs(); renderWater(); } }
+  if (!$('.w[data-w="year"]').hidden) tickYear();
+  if (b.getUTCMinutes() !== lastMin) { lastMin = b.getUTCMinutes(); renderNext(); renderWorld(); renderFtl(); renderWake(); renderLay(); renderTicker(); if (b.getUTCHours() === 0 && b.getUTCMinutes() === 0) { renderAgenda(); renderCount(); renderSun(); renderCal(); renderDocs(); renderWater(); } }
   else updateCountdown();
 }
 let nextTarget = null;
@@ -987,7 +1132,7 @@ function renderCal() {
   for (let i = 0; i < weeks * 7; i++) {
     const ds = addDays(start, i), d = byDate.get(ds), out = ds.slice(0, 7) !== V.month;
     const ev = evCount[ds] ? `<span class="evdots">${'<b></b>'.repeat(Math.min(3, evCount[ds]))}</span>` : '';
-    h += `<button class="cell${out ? ' out' : ''}${ds === today ? ' today' : ''}" data-date="${ds}" aria-pressed="${ds === V.sel}" aria-label="${longDate(ds)}${d ? ', ' + (TYPES[d.type] || d.type) : ''}">
+    h += `<button class="cell${out ? ' out' : ''}${ds === today ? ' today' : ''}" style="--k:${i % 7 + Math.floor(i / 7)}" data-date="${ds}" aria-pressed="${ds === V.sel}" aria-label="${longDate(ds)}${d ? ', ' + (TYPES[d.type] || d.type) : ''}">
       <span class="n">${+ds.slice(8)}</span>${chipFor(d)}${ev}</button>`;
   }
   $('#cal').innerHTML = h;
@@ -1062,7 +1207,7 @@ async function refreshWx(force) {
     }) };
     lsSet('weather', WX);
   } catch (e) { console.warn('weather', e); }
-  finally { wxBusy = false; renderWx(); renderPa(); }
+  finally { wxBusy = false; renderWx(); renderPa(); renderTicker(); }
 }
 const ICON = {
   sun:    ['#..#..#', '.#...#.', '..###..', '#.###.#', '..###..', '.#...#.', '#..#..#'],
@@ -1074,7 +1219,14 @@ const ICON = {
 function dotIcon(kind, px) {
   const g = ICON[kind] || ICON.cloud, s = px / 7;
   let c = '';
-  g.forEach((row, y) => [...row].forEach((ch, x) => { c += `<circle cx="${(x + .5) * s}" cy="${(y + .5) * s}" r="${s * .38}" class="${ch === '#' ? 'on' : ch === '@' ? 'hot' : 'off'}"/>`; }));
+  g.forEach((row, y) => [...row].forEach((ch, x) => {
+    let cls = ch === '#' ? 'on' : ch === '@' ? 'hot' : 'off', st = '';
+    if (ch === '#' && kind === 'sun' && !(x >= 2 && x <= 4 && y >= 2 && y <= 4)) cls += ' dm-ray';           // rays shimmer
+    if (ch === '#' && kind === 'partly' && x <= 2 && y <= 2) cls += ' dm-ray';
+    if (ch === '#' && kind === 'rain' && y >= 4) { cls += ' dm-drop'; st = ` style="--d:${((y - 4) * .28 + (x % 2) * .14).toFixed(2)}s"`; } // rain falls
+    if (ch === '@') cls += ' dm-bolt';                                                                    // lightning flickers
+    c += `<circle cx="${(x + .5) * s}" cy="${(y + .5) * s}" r="${s * .38}" class="${cls}"${st}/>`;
+  }));
   return `<svg class="dm" width="${px}" height="${px}" viewBox="0 0 ${px} ${px}" aria-hidden="true">${c}</svg>`;
 }
 const kindOf = (p, cond) => cond || (p >= 60 ? 'rain' : p >= 35 ? 'cloud' : p >= 15 ? 'partly' : 'sun');
@@ -1089,6 +1241,7 @@ function renderWx() {
   const upd = new Date(Date.parse(WX.updatedAt) + H7);
   const when = `${pad(upd.getUTCDate())} ${MON[upd.getUTCMonth()]} ${pad(upd.getUTCHours())}:${pad(upd.getUTCMinutes())}`;
   const today = days[0];
+  { const cond = age < 6 * 3600e3 ? c.current.cond : today && today.cond; const wet = cond === 'storm' ? '2' : cond === 'rain' || (today && today.p >= 50) ? '1' : ''; wet ? $('#pWx').dataset.rain = wet : delete $('#pWx').dataset.rain; }
   $('#wxBody').innerHTML = `
     <div class="wxnow">${dotIcon(age < 6 * 3600e3 ? c.current.cond : (today && today.cond) || kindOf(today ? today.p : 0), 64)}
       <div><div class="t">${Math.round(age < 6 * 3600e3 ? c.current.t : today ? today.hi : c.current.t)}<small>°C</small></div>
@@ -1129,7 +1282,7 @@ function renderAgenda() {
 }
 $('#agList').addEventListener('click', e => {
   const b = e.target.closest('[data-ag]'); if (!b) return;
-  V.sel = b.dataset.ag; V.month = V.sel.slice(0, 7); renderCal(); renderDay(); drawRoutes();
+  V.sel = b.dataset.ag; V.month = V.sel.slice(0, 7); renderCal(); renderDay(); flipIt($('#pDay')); drawRoutes();
   const day = $('.w[data-w="day"]'); if (day && !day.hidden) day.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'nearest' });
 });
 
@@ -1144,7 +1297,7 @@ function flightIn(a, b) {
   return t / 36e5;
 }
 const hm = h => { const m = Math.round(h * 60); return `${Math.floor(m / 60)}:${pad(m % 60)}`; };
-const dbar = (v, lim, n = 24) => { const on = Math.min(n, Math.round(v / lim * n)); return `<div class="dbar${v > lim ? ' over' : ''}" aria-hidden="true">${Array.from({ length: n }, (_, i) => `<i class="${i < on ? 'on' : ''}"></i>`).join('')}</div>`; };
+const dbar = (v, lim, n = 24) => { const on = Math.min(n, Math.round(v / lim * n)); return `<div class="dbar${v > lim ? ' over' : ''}" aria-hidden="true"${n !== 24 ? ` style="grid-template-columns:repeat(${n},minmax(0,1fr))"` : ''}>${Array.from({ length: n }, (_, i) => `<i class="${i < on ? 'on' : ''}" style="--k:${i}"></i>`).join('')}</div>`; };
 function renderFtl() {
   const now = Date.now();
   const row = (label, v, lim) => `<div><div class="fr"><span class="lbl">${label}</span><span class="v">${hm(v)}<small>/ ${lim}h${v > lim ? ' · over' : ''}</small></span></div>${dbar(v, lim)}</div>`;
@@ -1286,6 +1439,8 @@ function buildPts(n) {
 }
 const G = { lon: 100.6, lat: 14, drag: null, idle: 0, w: 0, h: 0, dpr: 1, routes: [], marks: [], colors: null, frame: 0, zoom: Math.min(6, Math.max(.7, +lsGet('globezoom') || 1)), nz: 1 };
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const calm = () => document.body.classList.contains('calm');
+const maxMotion = () => document.body.classList.contains('m-max');
 const ptCount = () => Math.round(Math.min(70000, Math.min(11000, Math.max(4500, G.w * G.h * .055)) * Math.max(1, G.zoom) ** 2));
 function sizeGlobe() {
   const w = cv.clientWidth, h = cv.clientHeight; if (w < 10 || h < 10) return false; // layout size, so a scaled widget still draws crisply
@@ -1335,7 +1490,7 @@ function frame(ts) {
   const C = G.colors;
   if (!G.drag) {
     if (G.target) { G.lon += (G.target.lon - G.lon) * .04; G.lat += (G.target.lat - G.lat) * .04; if (Math.abs(G.target.lon - G.lon) < .05) G.target = null; }
-    else if (!reduce && Date.now() > G.idle) G.lon = (G.lon + .06 / G.zoom + 540) % 360 - 180;
+    else if (!calm() && Date.now() > G.idle) G.lon = (G.lon + .06 / G.zoom + 540) % 360 - 180;
   }
   ctx.setTransform(G.dpr, 0, 0, G.dpr, 0, 0);
   ctx.clearRect(0, 0, G.w, G.h);
@@ -1346,10 +1501,16 @@ function frame(ts) {
     if (p.land) { const k = q.z > .55 ? 0 : q.z > .25 ? 1 : 2; const r = dot * (.55 + .45 * q.z); lb[k].moveTo(q.x + r, q.y); lb[k].arc(q.x, q.y, r, 0, 6.283); }
     else { const r = dot * .42 * (.6 + .4 * q.z); sea.moveTo(q.x + r, q.y); sea.arc(q.x, q.y, r, 0, 6.283); }
   }
+  if (maxMotion()) { // twinkling stars around the globe
+    if (!G.stars) G.stars = Array.from({ length: 140 }, () => [Math.random(), Math.random(), Math.random() * 6.283, .4 + Math.random() * 1.6]);
+    ctx.fillStyle = C.ink; const cx0 = G.w / 2, cy0 = G.h / 2 + 18;
+    for (const [sx, sy, ph, sp] of G.stars) { const x = sx * G.w, y = sy * G.h; if (Math.hypot(x - cx0, y - cy0) < R + 6) continue; ctx.globalAlpha = .12 + .5 * Math.abs(Math.sin(ts / 1000 * sp + ph)); ctx.beginPath(); ctx.arc(x, y, .9, 0, 6.283); ctx.fill(); }
+    ctx.globalAlpha = 1;
+  }
   ctx.fillStyle = C.sea; ctx.fill(sea);
   ctx.fillStyle = C.land; [1, .62, .32].forEach((a, i) => { ctx.globalAlpha = a; ctx.fill(lb[i]); }); ctx.globalAlpha = 1;
   // route: a solid red line with a halo, plus bright dots running toward the destination
-  const phase = reduce ? .5 : (ts / 1400) % 1;
+  const phase = calm() ? .5 : (ts / 1400) % 1;
   ctx.lineCap = 'round'; ctx.lineJoin = 'round';
   for (const [a, b] of G.routes) {
     const n = 48, pts = [];
@@ -1359,6 +1520,13 @@ function frame(ts) {
     ctx.strokeStyle = C.panel; ctx.lineWidth = dot * 2.2 + 5; ctx.stroke(path);       // halo keeps it clear of the land dots
     ctx.strokeStyle = C.route; ctx.lineWidth = Math.max(2.5, dot * 1.6); ctx.stroke(path);
     ctx.fillStyle = C.route;
+    if (maxMotion()) { // a plane: bright head with a fading trail, flying base → destination
+      const k = ((ts / 2600) % 1);
+      for (let j = 14; j >= 0; j--) { const tt = k - j * .012; if (tt < 0) continue; const [la, lo] = slerp(a, b, tt), q = proj(la, lo, .07 * Math.sin(Math.PI * tt)); if (q.z < -.05) continue;
+        ctx.globalAlpha = j ? (1 - j / 15) * .7 : 1; ctx.fillStyle = j ? C.route : C.ink; ctx.beginPath(); ctx.arc(q.x, q.y, j ? Math.max(1.5, dot * 1.6) * (1 - j / 18) : Math.max(4, dot * 2.6), 0, 6.283); ctx.fill();
+        if (!j) { ctx.strokeStyle = C.route; ctx.lineWidth = 2; ctx.stroke(); } }
+      ctx.globalAlpha = 1; ctx.fillStyle = C.route;
+    }
     pts.forEach(({ t, q }, i) => { // a short comet of dots moving along the line
       const d = ((phase - t) % 1 + 1) % 1;
       if (q.z < -.05 || d > .12 || i % 2) return;
@@ -1376,6 +1544,7 @@ function frame(ts) {
       ctx.fillStyle = C.panel; ctx.beginPath(); ctx.arc(q.x, q.y, s + 4, 0, 6.283); ctx.fill();
       ctx.fillStyle = col; ctx.beginPath(); ctx.arc(q.x, q.y, s, 0, 6.283); ctx.fill();
       ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(q.x, q.y, s + 2.5, 0, 6.283); ctx.stroke();
+      if (onRoute && !calm()) { const ph = ((ts / 1800) + (m.c.charCodeAt(0) % 5) / 5) % 1; ctx.globalAlpha = (1 - ph) * .8; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(q.x, q.y, s + 3 + ph * dot * 9 + ph * 10, 0, 6.283); ctx.stroke(); ctx.globalAlpha = 1; } // radar ping
       ctx.lineWidth = 4; ctx.strokeStyle = C.panel; ctx.strokeText(m.c, q.x + s + 6, q.y + 4);
       ctx.fillStyle = col; ctx.fillText(m.c, q.x + s + 6, q.y + 4);
     }
@@ -1490,10 +1659,11 @@ $('#clearR').onclick = () => {
   if (Date.now() - clearArm > 4000) { clearArm = Date.now(); $('#clearR').textContent = 'Tap again to clear'; setTimeout(() => $('#clearR').textContent = 'Clear roster', 4000); return; }
   S.roster.duties = []; S.roster.importedAt = ''; save('roster'); $('#clearR').textContent = 'Clear roster'; msg('ok', 'Roster cleared.'); rosterChanged();
 };
-const shiftMonth = n => { const [y, m] = V.month.split('-').map(Number); const d = new Date(Date.UTC(y, m - 1 + n, 1)); V.month = isoOf(d).slice(0, 7); V.msg = null; renderCal(); drawRoutes(); };
+const wave = () => { const c = $('#cal'); c.classList.remove('wave'); void c.offsetWidth; c.classList.add('wave'); clearTimeout(wave.t); wave.t = setTimeout(() => c.classList.remove('wave'), 900); };
+const shiftMonth = n => { const [y, m] = V.month.split('-').map(Number); const d = new Date(Date.UTC(y, m - 1 + n, 1)); V.month = isoOf(d).slice(0, 7); V.msg = null; renderCal(); wave(); drawRoutes(); };
 $('#prevM').onclick = () => shiftMonth(-1); $('#nextM').onclick = () => shiftMonth(1);
-$('#todayB').onclick = () => { V.month = todayISO().slice(0, 7); V.sel = todayISO(); V.msg = null; renderCal(); renderDay(); drawRoutes(); };
-$('#cal').addEventListener('click', e => { const c = e.target.closest('.cell'); if (!c) return; V.sel = c.dataset.date; if (V.sel.slice(0, 7) !== V.month) V.month = V.sel.slice(0, 7); renderCal(); renderDay(); drawRoutes(); renderPa(); const b = $(`.cell[data-date="${V.sel}"]`); if (b) b.focus(); });
+$('#todayB').onclick = () => { const moved = V.month !== todayISO().slice(0, 7); V.month = todayISO().slice(0, 7); V.sel = todayISO(); V.msg = null; renderCal(); if (moved) wave(); renderDay(); drawRoutes(); };
+$('#cal').addEventListener('click', e => { const c = e.target.closest('.cell'); if (!c) return; if (V.sel !== c.dataset.date) setTimeout(() => flipIt($('#pDay'))); V.sel = c.dataset.date; if (V.sel.slice(0, 7) !== V.month) V.month = V.sel.slice(0, 7); renderCal(); renderDay(); drawRoutes(); renderPa(); const b = $(`.cell[data-date="${V.sel}"]`); if (b) b.focus(); });
 $('#pDay').addEventListener('submit', e => {
   if (e.target.id !== 'evForm') return; e.preventDefault();
   const title = $('#evTitle').value.trim(); if (!title) return;
@@ -1501,7 +1671,7 @@ $('#pDay').addEventListener('submit', e => {
   save('events'); renderDay(); renderCal(); renderAgenda(); $('#evTitle').focus();
 });
 $('#pDay').addEventListener('click', e => { const b = e.target.closest('[data-del-ev]'); if (!b) return; S.events = S.events.filter(x => x.id !== b.dataset.delEv); save('events'); renderDay(); renderCal(); renderAgenda(); });
-$('#wxTabs').addEventListener('click', e => { const b = e.target.closest('[data-wx]'); if (!b) return; V.wx = b.dataset.wx; renderWx(); });
+$('#wxTabs').addEventListener('click', e => { const b = e.target.closest('[data-wx]'); if (!b) return; V.wx = b.dataset.wx; renderWx(); flipIt($('#wxBody')); });
 function listForm(form, input, k, qty) {
   $(form).addEventListener('submit', e => {
     e.preventDefault(); const t = $(input).value.trim(); if (!t) return;
@@ -1513,7 +1683,7 @@ listForm('#todoForm', '#todoIn', 'todos'); listForm('#shopForm', '#shopIn', 'sho
 $('#bagReset').onclick = () => { S.bag.forEach(i => i.done = false); save('bag'); renderList('bag'); };
 document.addEventListener('click', e => {
   const t = e.target.closest('[data-tog]'), d = e.target.closest('[data-del]');
-  if (t) { const k = t.dataset.k, it = S[k].find(i => i.id === t.dataset.tog); if (it) { it.done = !it.done; save(k); renderList(k); const n = $(`[data-tog="${it.id}"]`); if (n) n.focus(); } }
+  if (t) { const k = t.dataset.k, it = S[k].find(i => i.id === t.dataset.tog); if (it) { it.done = !it.done; save(k); renderList(k); const n = $(`[data-tog="${it.id}"]`); if (n) { n.focus(); if (it.done) n.closest('.it').classList.add('just'); } } }
   if (d) { const k = d.dataset.k; S[k] = S[k].filter(i => i.id !== d.dataset.del); save(k); ({ count: renderCount, links: renderLinks, docs: renderDocs, exp: renderExp }[k] || (() => renderList(k)))(); }
 });
 $('#todoClear').onclick = () => { S.todos = S.todos.filter(i => !i.done); save('todos'); renderList('todos'); };
@@ -1763,8 +1933,53 @@ $('#waPlus').onclick = () => waSet(S.water.n + 1);
 $('#waMinus').onclick = () => waSet(S.water.n - 1);
 $('#waGoal').addEventListener('change', () => { S.water.goal = +$('#waGoal').value; save('water'); renderWater(); });
 
+/* ---------- year countdown ---------- */
+const MON3 = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+let yrKey = '';
+function yearSpan() { const y = bkk().getUTCFullYear(); return { y, start: Date.UTC(y, 0, 1) - H7, end: Date.UTC(y + 1, 0, 1) - H7 }; }
+function renderYear() {
+  const mode = lsGet('yearmode') || 'dots', { y, start, end } = yearSpan(), now = Date.now(), t = todayISO();
+  const total = Math.round((end - start) / 864e5), doy = Math.floor((now - start) / 864e5) + 1, left = total - doy;
+  $('#yrTitle').textContent = String(y);
+  document.querySelectorAll('#yrMode [data-yr]').forEach(b => b.setAttribute('aria-pressed', b.dataset.yr === mode));
+  const pct = (now - start) / (end - start);
+  const key = mode + t + S.count.length + (S.roster.importedAt || '');
+  if (key !== yrKey) {
+    yrKey = key;
+    if (mode === 'dots') {
+      const leave = new Set(duties().filter(d => d.type === 'AL' && !demo()).map(d => d.date)), ev = new Set(S.count.map(c => c.date));
+      let rows = '';
+      for (let m = 0; m < 12; m++) {
+        const n = new Date(Date.UTC(y, m + 1, 0)).getUTCDate(); let dots = '';
+        for (let d = 1; d <= n; d++) { const ds = `${y}-${pad(m + 1)}-${pad(d)}`; dots += `<i class="${ds < t ? 'g' : ds === t ? 't' : ''}${leave.has(ds) ? ' al' : ''}${ev.has(ds) && ds >= t ? ' ev' : ''}" title="${longDate(ds)}"></i>`; }
+        rows += `<div class="yr-row${t.slice(5, 7) === pad(m + 1) ? ' cur' : ''}"><span class="m">${MON3[m]}</span><div class="yr-dots">${dots}</div></div>`;
+      }
+      $('#yrBody').innerHTML = `<div class="yr-top"><div><div class="lbl">Until ${y + 1}</div><div class="yr-clock" id="yrClock"></div></div><div class="lbl" style="text-align:right">Day ${doy} of ${total}<br>${left} days left</div></div>
+        <div class="yr-grid" role="img" aria-label="${doy} of ${total} days of ${y} gone">${rows}</div>
+        <div><div class="fr"><span class="lbl">${y} so far</span><span class="v">${(pct * 100).toFixed(1)}<small>%</small></span></div>${dbar(pct, 1, 30)}</div>
+        <div class="yr-key"><span><i style="background:var(--ink)"></i>Gone</span><span><i style="box-shadow:0 0 0 1.5px var(--ink) inset"></i>Leave</span><span><i style="background:radial-gradient(circle,var(--ink) 0 28%,transparent 34%);box-shadow:0 0 0 1.5px var(--ink) inset"></i>Countdown</span><span><i style="background:var(--unlit)"></i>To come</span></div>`;
+    } else {
+      const cm = +t.slice(5, 7) - 1, dim = new Date(Date.UTC(y, cm + 1, 0)).getUTCDate(), f = Math.round(+t.slice(8) / dim * 100);
+      $('#yrBody').innerHTML = `<div class="lbl">Until 1 January ${y + 1}</div>
+        <div class="yr-flip"><div><b id="yrD"></b><span>Days</span></div><div><b id="yrH"></b><span>Hours</span></div><div><b id="yrM"></b><span>Min</span></div><div><b id="yrS"></b><span>Sec</span></div></div>
+        <div class="yr-months">${MON3.map((m, i) => `<div class="${i === cm ? 'now' : ''}"><i class="${i < cm ? 'done' : i === cm ? 'cur' : ''}"${i === cm ? ` style="--f:${f}%"` : ''}></i><span>${m[0]}</span></div>`).join('')}</div>
+        <div><div class="fr"><span class="lbl">${y} so far · day ${doy} of ${total}</span><span class="v">${(pct * 100).toFixed(1)}<small>%</small></span></div>${dbar(pct, 1, 30)}</div>`;
+    }
+  }
+  tickYear();
+}
+function tickYear() {
+  const { end } = yearSpan(), ms = Math.max(0, end - Date.now()), s = Math.floor(ms / 1000), d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
+  const c = $('#yrClock'); if (c) c.textContent = `${d}D ${pad(h)}:${pad(m)}:${pad(sec)}`;
+  const set = (id, v) => { const el = $(id); if (el && el.dataset.v !== v) { el.dataset.v = v; el.textContent = v; } };
+  set('#yrD', String(d).padStart(3, '0')); set('#yrH', pad(h)); set('#yrM', pad(m)); set('#yrS', pad(sec));
+}
+$('#yrMode').addEventListener('click', e => { const b = e.target.closest('[data-yr]'); if (!b) return; lsSet('yearmode', b.dataset.yr); yrKey = ''; renderYear(); });
+
 /* ---------- layout: drag to move, drag to resize, pin, add, remove ---------- */
 const WIDGETS = [
+  { id: 'ticker', name: 'LED ticker', w: 4, on: true },
+  { id: 'year', name: 'Year countdown', w: 1, on: true },
   { id: 'clock', name: 'Clock & next duty', w: 1, on: true }, { id: 'cal', name: 'Roster calendar', w: 2, on: true },
   { id: 'day', name: 'Selected day', w: 1, on: true }, { id: 'agenda', name: 'Next 7 days', w: 1, on: true },
   { id: 'ftl', name: 'Duty hours', w: 1, on: true }, { id: 'wx', name: 'Weather', w: 1, on: true },
@@ -1781,11 +1996,11 @@ const WIDGETS = [
   { id: 'units', name: 'Unit converter', w: 1, on: false }, { id: 'water', name: 'Water', w: 1, on: false }
 ];
 const GROUPS = [['Roster & duty', ['cal', 'day', 'agenda', 'ftl', 'fdp', 'wake', 'lay', 'docs']], ['On board', ['pa', 'nato', 'units']],
-  ['Travel & time', ['clock', 'world', 'tconv', 'wx', 'globe', 'sun', 'fx', 'exp']], ['Everyday', ['todo', 'shop', 'notes', 'count', 'bag', 'timer', 'links', 'water']]];
+  ['Travel & time', ['ticker', 'clock', 'world', 'tconv', 'wx', 'globe', 'sun', 'fx', 'exp']], ['Everyday', ['year', 'todo', 'shop', 'notes', 'count', 'bag', 'timer', 'links', 'water']]];
 const WN = Object.fromEntries(WIDGETS.map(w => [w.id, w.name])), WD = Object.fromEntries(WIDGETS.map(w => [w.id, w]));
 function layout() { // saved order + any widget added in a later version
   const saved = (S.layout || []).filter(x => WN[x.id]).map(x => ({ id: x.id, on: !!x.on, pin: !!x.pin, w: x.w || x.size || WD[x.id].w, h: x.h || 0 }));
-  WIDGETS.forEach(w => { if (!saved.some(x => x.id === w.id)) saved.push({ id: w.id, on: w.on, pin: false, w: w.w, h: 0 }); });
+  WIDGETS.forEach(w => { if (!saved.some(x => x.id === w.id)) { const x = { id: w.id, on: w.on, pin: false, w: w.w, h: 0 }; w.id === 'ticker' ? saved.unshift(x) : saved.push(x); } });
   return (S.layout = saved);
 }
 const ordered = () => { const L = layout(); return [...L.filter(x => x.pin), ...L.filter(x => !x.pin)]; };
@@ -1832,7 +2047,7 @@ function applyLayout() {
   ordered().forEach(x => {
     const el = wEl(x.id); if (!el) return;
     const wi = el.firstElementChild;
-    el.hidden = !x.on; sizeW(el, x);
+    el.hidden = !x.on; sizeW(el, x); el.style.setProperty('--i', ordered().filter(o => o.on).indexOf(x));
     let bar = wi.querySelector(':scope > .wbar');
     if (!bar) { bar = document.createElement('div'); bar.className = 'wbar'; wi.prepend(bar); }
     bar.innerHTML = `<span class="wn"><button class="grip" data-grip="${x.id}" aria-label="Drag ${esc(WN[x.id])} to move it"><i></i><i></i><i></i><i></i><i></i><i></i></button><b class="${x.pin ? 'on' : ''}"></b>${esc(WN[x.id])}</span><span class="wbtns">
@@ -1955,18 +2170,129 @@ $('#menuB').onclick = e => { e.stopPropagation(); setMenu(menu.hidden); };
 document.addEventListener('click', e => { if (!menu.hidden && !e.target.closest('#menu')) setMenu(false); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { setMenu(false); if (editing) { editing = false; applyLayout(); } } });
 
+/* ---------- motion switch ---------- */
+const MOTION = ['full', 'max', 'calm'];
+const motionNow = () => lsGet('motion') || (reduce ? 'calm' : 'full'); // phones with Reduce Motion start calm until you choose
+function applyMotion(m) {
+  document.body.classList.toggle('calm', m === 'calm'); document.body.classList.toggle('m-max', m === 'max');
+  $('#motionB').textContent = 'Motion: ' + { max: 'Max', full: 'Full', calm: 'Calm' }[m];
+}
+$('#motionB').onclick = () => { const nx = MOTION[(MOTION.indexOf(motionNow()) + 1) % 3]; lsSet('motion', nx); applyMotion(nx); renderTicker(true); };
+
+/* ---------- Max: living dot field behind the board; taps send ripples through it ---------- */
+const BG = { cv: $('#bgdots'), ripples: [], last: 0, ink: '#fff', n: 0 };
+function bgFrame(ts) {
+  requestAnimationFrame(bgFrame);
+  if (!maxMotion() || document.hidden || ts - BG.last < 33) return; // ~30 fps is plenty for a backdrop
+  BG.last = ts;
+  if (BG.n++ % 60 === 0) BG.ink = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#fff';
+  const cv = BG.cv, dpr = Math.min(2, devicePixelRatio || 1), w = innerWidth, h = innerHeight;
+  if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+  const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, w, h);
+  const t = ts / 1000, step = 14, P = [new Path2D(), new Path2D(), new Path2D(), new Path2D()];
+  BG.ripples = BG.ripples.filter(r => t - r.t < 2.4);
+  for (let y = step / 2; y < h; y += step) for (let x = step / 2; x < w; x += step) {
+    let v = Math.sin(x * .011 + y * .007 - t * 1.1) * Math.sin(y * .009 - x * .004 + t * .6); v = v > 0 ? v * v * .7 : 0;
+    for (const r of BG.ripples) { const age = t - r.t, d = Math.hypot(x - r.x, y - r.y) - age * 520; v += Math.exp(-d * d / 1400) * (1 - age / 2.4) * 1.6; }
+    const b = v > .95 ? 3 : v > .5 ? 2 : v > .18 ? 1 : 0, rad = 1 + Math.min(1.3, v) * .95;
+    P[b].moveTo(x + rad, y); P[b].arc(x, y, rad, 0, 6.283);
+  }
+  c.fillStyle = BG.ink; [.07, .14, .26, .46].forEach((a, i) => { c.globalAlpha = a; c.fill(P[i]); }); c.globalAlpha = 1;
+}
+requestAnimationFrame(bgFrame);
+addEventListener('pointerdown', e => { if (maxMotion()) BG.ripples.push({ x: e.clientX, y: e.clientY, t: performance.now() / 1000 }); }, { passive: true });
+
+/* ---------- Max: tilt and light follow the pointer over a widget ---------- */
+$('.grid').addEventListener('pointermove', e => {
+  if (!maxMotion() || e.pointerType !== 'mouse' || editing) return;
+  const wi = e.target.closest('.wi'); if (!wi) return;
+  const r = wi.getBoundingClientRect(), px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+  wi.style.setProperty('--ry', ((px - .5) * 5).toFixed(2) + 'deg'); wi.style.setProperty('--rx', ((.5 - py) * 4).toFixed(2) + 'deg');
+  wi.style.setProperty('--mx', (e.clientX - r.left) + 'px'); wi.style.setProperty('--my', (e.clientY - r.top) + 'px');
+}, { passive: true });
+$('.grid').addEventListener('pointerout', e => { const wi = e.target.closest && e.target.closest('.wi'); if (wi && !wi.contains(e.relatedTarget)) { wi.style.setProperty('--rx', '0deg'); wi.style.setProperty('--ry', '0deg'); } });
+
+/* ---------- Max: boot splash — dots fly in and spell AXIOM, then burst ---------- */
+function runSplash() {
+  return new Promise(done => {
+    const sp = $('#splash'), cv = $('#splashCv');
+    sp.hidden = false;
+    const dpr = Math.min(2, devicePixelRatio || 1), w = innerWidth, h = innerHeight;
+    cv.width = w * dpr; cv.height = h * dpr; const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const ink = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#fff';
+    const word = 'AXIOM', cells = []; let x = 0;
+    for (const ch of word) { const rows = DMF.glyph(ch); rows.forEach((r, y) => [...r].forEach((b, i) => { if (b === '1') cells.push([x + i, y]); })); x += rows[0].length + 1; }
+    const cols = x - 1, unit = Math.min(w * .78 / cols, 46), ox = (w - cols * unit) / 2, oy = h / 2 - 3.5 * unit - unit * .6;
+    const parts = cells.map(([cx, cy]) => { const a = Math.random() * 6.283, d = Math.max(w, h) * (.55 + Math.random() * .5);
+      return { tx: ox + (cx + .5) * unit, ty: oy + (cy + .5) * unit, sx: w / 2 + Math.cos(a) * d, sy: h / 2 + Math.sin(a) * d, dl: Math.random() * .25, ea: Math.random() * 6.283, es: .6 + Math.random() * 1.4 }; });
+    const sub = [...'CREW DASHBOARD'].map((ch, i) => ({ ch, i }));
+    const t0 = performance.now(), T_IN = 950, T_HOLD = 420, T_OUT = 520; let ended = false;
+    const finish = () => { if (ended) return; ended = true; sp.classList.add('out'); setTimeout(() => { sp.hidden = true; sp.classList.remove('out'); }, 520); done(); };
+    sp.onpointerdown = finish;
+    const ease = k => 1 - Math.pow(1 - k, 3), back = k => { const s = 1.6; return 1 + (s + 1) * Math.pow(k - 1, 3) + s * Math.pow(k - 1, 2); };
+    (function f(now) {
+      if (ended) return;
+      const t = now - t0; c.clearRect(0, 0, w, h); c.fillStyle = ink;
+      for (const p of parts) {
+        let px, py, r = unit * .42, a = 1;
+        if (t < T_IN) { const k = Math.max(0, Math.min(1, (t / T_IN - p.dl) / (1 - p.dl))), e = back(k); px = p.sx + (p.tx - p.sx) * e; py = p.sy + (p.ty - p.sy) * e; r *= .4 + .6 * ease(k); a = .25 + .75 * k; }
+        else if (t < T_IN + T_HOLD) { px = p.tx; py = p.ty; const pulse = Math.sin((t - T_IN) / T_HOLD * Math.PI); r *= 1 + .08 * pulse; }
+        else { const k = Math.min(1, (t - T_IN - T_HOLD) / T_OUT), e = ease(k); px = p.tx + Math.cos(p.ea) * e * unit * 9 * p.es; py = p.ty + Math.sin(p.ea) * e * unit * 9 * p.es; r *= 1 - e * .7; a = 1 - e; }
+        c.globalAlpha = a; c.beginPath(); c.arc(px, py, r, 0, 6.283); c.fill();
+      }
+      // subtitle types on in small dots
+      if (t > T_IN * .6 && t < T_IN + T_HOLD + T_OUT * .5) {
+        const u2 = Math.max(2, unit * .16), n = Math.min(sub.length, Math.floor((t - T_IN * .6) / 28)); let sx = w / 2 - (sub.length * 6 - 1) * u2 / 2;
+        c.globalAlpha = t > T_IN + T_HOLD ? Math.max(0, 1 - (t - T_IN - T_HOLD) / (T_OUT * .5)) : .7;
+        for (let i = 0; i < n; i++) { const rows = DMF.glyph(sub[i].ch); if (rows) rows.forEach((r, y) => [...r].forEach((b, k) => { if (b === '1') { c.beginPath(); c.arc(sx + (k + .5) * u2, oy + 8.6 * unit + (y + .5) * u2, u2 * .42, 0, 6.283); c.fill(); } })); sx += ((rows ? rows[0].length : 3) + 1) * u2; }
+      }
+      c.globalAlpha = 1;
+      if (t > T_IN + T_HOLD + T_OUT * .35) finish();
+      requestAnimationFrame(f);
+    })(t0);
+  });
+}
+const flipIt = el => { if (!el || !maxMotion()) return; el.classList.remove('flip'); void el.offsetWidth; el.classList.add('flip'); clearTimeout(el._ft); el._ft = setTimeout(() => el.classList.remove('flip'), 900); };
+
+/* ---------- LED ticker: a scrolling departure-board line built from everything on the board ---------- */
+let lastTk = '';
+function tickerText() {
+  const parts = [], t = todayISO();
+  const nx = nextDuty();
+  if (nx) parts.push(`${nx.type === 'FDP' ? 'Next duty' : TYPES[nx.type]} ${nx.legs && nx.legs[0].flt ? nx.legs[0].flt + ' ' : ''}${nx.legs ? [nx.legs[0].from, ...nx.legs.map(l => l.to)].join(' › ') + ' ' : ''}${longDate(nx.date)} · report ${nx.start}${demo() ? ' (example)' : ''}`);
+  const lay = layovers()[0]; if (lay && S.lay[lay.key] && S.lay[lay.key].hotel) parts.push(`Layover ${lay.to} · ${S.lay[lay.key].hotel}${S.lay[lay.key].room ? ' room ' + S.lay[lay.key].room : ''}`);
+  const c = WX && WX.cities && WX.cities[0]; if (c) parts.push(`${c.name} ${Math.round(c.current.t)}° ${c.current.text}`);
+  S.docs.forEach(d => { const n = Math.round((dOf(d.date) - dOf(t)) / 864e5); if (n <= 90) parts.push(n < 0 ? `${d.name} expired` : `${d.name} expires in ${n} days`); });
+  const cd = [...S.count].filter(x => x.date >= t).sort((a, b) => a.date.localeCompare(b.date))[0]; if (cd) { const n = Math.round((dOf(cd.date) - dOf(t)) / 864e5); parts.push(n ? `${cd.title} in ${n} day${n > 1 ? 's' : ''}` : `${cd.title} today`); }
+  const td = S.todos.filter(x => !x.done).length; if (td) parts.push(`${td} task${td > 1 ? 's' : ''} to do`);
+  const sh = S.shopping.filter(x => !x.done).length; if (sh) parts.push(`${sh} thing${sh > 1 ? 's' : ''} to buy`);
+  return parts.length ? parts.join('   •   ') : 'Axiom ready';
+}
+function renderTicker(force) {
+  const t = tickerText(); if (t === lastTk && !force) return; lastTk = t;
+  const el = $('#tkText');
+  el.style.setProperty('--dur', Math.max(18, t.length * .26).toFixed(1) + 's');
+  el.innerHTML = `<span class="tkw">${esc(t)}</span><span class="tkw" aria-hidden="true">${esc(t)}</span>`;
+}
+let tkT = 0; const queueTicker = () => { clearTimeout(tkT); tkT = setTimeout(() => renderTicker(), 300); };
+
 $('#backupB').onclick = backup;
 $('#restoreB').onclick = () => $('#restoreIn').click();
 $('#restoreIn').onchange = e => { const f = e.target.files[0]; e.target.value = ''; if (f) restore(f); };
-$('#themeB').onclick = () => { const cur = lsGet('theme') || 'auto'; const nx = THEMES[(THEMES.indexOf(cur) + 1) % 3]; lsSet('theme', nx); applyTheme(nx); };
+$('#themeB').onclick = () => { const nx = themeNow() === 'dark' ? 'light' : 'dark'; lsSet('theme', nx); applyTheme(nx); };
 $('#pWx').addEventListener('click', e => { if (e.target.id === 'wxR') { e.target.disabled = true; e.target.textContent = 'Updating…'; refreshWx(true); } });
 
 /* ---------- boot ---------- */
-function rosterChanged() { renderCal(); renderDay(); renderNext(); drawRoutes(); renderWorld(); renderAgenda(); renderFtl(); renderSun(); renderCount(); fdpFromNext(); renderWake(); renderLay(); renderTconv(); renderPa(); }
-function renderAll() { applyLayout(); renderWorld(); renderAgenda(); renderFtl(); renderCount(); renderList('bag'); renderFx(); renderTimer(); renderLinks(); renderSun(); fdpFromNext(); renderWake(); renderLay(); renderDocs(); renderTconv(); renderExp(); renderPa(); renderNato(); renderUnits(); renderWater(); $('#notes').value = S.notes; $('#baseLbl').textContent = 'Base ' + base(); renderCal(); renderDay(); renderNext(); renderWx(); renderList('todos'); renderList('shopping'); drawRoutes(); }
+function rosterChanged() { yrKey = ''; renderYear(); renderCal(); renderDay(); renderNext(); drawRoutes(); renderWorld(); renderAgenda(); renderFtl(); renderSun(); renderCount(); fdpFromNext(); renderWake(); renderLay(); renderTconv(); renderPa(); }
+function renderAll() { applyLayout(); renderTicker(); renderYear(); renderWorld(); renderAgenda(); renderFtl(); renderCount(); renderList('bag'); renderFx(); renderTimer(); renderLinks(); renderSun(); fdpFromNext(); renderWake(); renderLay(); renderDocs(); renderTconv(); renderExp(); renderPa(); renderNato(); renderUnits(); renderWater(); $('#notes').value = S.notes; $('#baseLbl').textContent = 'Base ' + base(); renderCal(); renderDay(); renderNext(); renderWx(); renderList('todos'); renderList('shopping'); drawRoutes(); }
 DOCS.forEach(k => applyBody(k, lsGet(k)));
 if (lsGet('fxamt')) $('#fxAmt').value = lsGet('fxamt');
-applyTheme(lsGet('theme') || 'auto');
+applyTheme(themeNow());
+applyMotion(motionNow());
+if (motionNow() !== 'calm') { // boot-up: AXIOM splash, then widgets rise and the board flips into place
+  document.body.classList.remove('booting');
+  runSplash().then(() => { document.body.classList.add('booting'); DMF.flipAll(); setTimeout(() => document.body.classList.remove('booting'), 2800); });
+} else setTimeout(() => document.body.classList.remove('booting'), 2600);
 renderAll(); setSync(); tick(); setInterval(tick, 1000);
 DMF.walk(document.body);
 requestAnimationFrame(frame);

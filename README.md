@@ -38,6 +38,9 @@ A personal dot-matrix dashboard for cabin crew, in black and white, with one red
 - **Sunrise & sunset:** for DMK and your next destinations.
 
 **Everyday** (add from Edit layout → Add widgets)
+- **Year countdown** (on the board at first): live countdown to New Year. Switch between two styles in the widget corner:
+  - **Dots:** the whole year as 365 dots. Days gone are filled, today pulses, roster leave shows as rings, and countdown dates are marked.
+  - **Countdown:** split-flap days, hours, minutes and seconds, with a month strip.
 - **Countdown:** annual leave on your roster shows up automatically.
 - **Crew bag check:** a reusable packing list.
 - **Nap timer.**
@@ -69,6 +72,31 @@ The board picks how many columns to use from the screen width:
 
 Each widget scales its text to its own width.
 
+## Motion
+There are three levels, under ⋯ → **Motion**: **Full** (the default), **Max** and **Calm**. If your phone has Reduce Motion turned on, Axiom starts on Calm until you pick a level yourself.
+
+**Boot-up (Full and Max)**
+- **Splash:** dots fly in from all sides, spell **AXIOM** and "CREW DASHBOARD", then burst away. Tap it to skip.
+- **Board settles:** widgets rise in one after another, every heading and number shuffles like a split-flap departures board, and duty-hour bars light up dot by dot.
+
+**While you use it (Full)**
+- **LED ticker** across the top. Hover or tap it to pause.
+- **Clock:** changed digits pop in, and the colon blinks.
+- **Weather icons:** rain drips, rays shimmer, and lightning flickers.
+- **Globe:** a red route line with running dots and a radar ping.
+- **Edit layout:** widgets jiggle.
+- **Small touches:** calendar cells wave in when you change month, and a ticked box pops.
+
+**Max adds**
+- A rippling dot background that reacts to taps.
+- 3D tilt with a light that follows the mouse.
+- A plane and stars on the globe.
+- Rain and lightning behind the weather.
+- Page flips.
+- Shuffling on every value that changes.
+
+**Calm** turns everything off, including the boot-up.
+
 ## Dot lettering
 The big numbers and headings are drawn as real round dots by the app itself, not with a font. So they look the same on every iPhone, Android phone or computer, even where web fonts are blocked (Lockdown Mode, file previews, some in-app browsers).
 
@@ -79,6 +107,9 @@ The big numbers and headings are drawn as real round dots by the app itself, not
   2. Open the link in Safari, then tap **Share → Add to Home Screen**.
   3. After the first visit it opens with no signal.
 - **After you upload a new `index.html`:** bump `CACHE_VERSION` in `sw.js` (for example `axiom-v1` → `axiom-v2`).
+
+## Theme
+⋯ → **Theme** switches between Light and Dark. The first time, it follows your phone's setting. After that it stays on what you picked.
 
 ## Data
 Axiom was called Crew Dotboard before. Data saved under the old name carries over, and old backups still restore.
