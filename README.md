@@ -69,6 +69,9 @@ The board picks how many columns to use from the screen width:
 
 Each widget scales its text to its own width.
 
+## Dot lettering
+The big numbers and headings are drawn as real round dots by the app itself, not with a font. So they look the same on every iPhone, Android phone or computer, even where web fonts are blocked (Lockdown Mode, file previews, some in-app browsers).
+
 ## Use it
 - **Straight from the file:** open `index.html` in Safari, Chrome or Edge.
 - **As an app on iPhone:**
@@ -86,4 +89,4 @@ On iPhone, the Home Screen app keeps its own data, separate from Safari. Use Bac
 
 Countdowns read the eCrew times as Bangkok time. Weather comes from Open-Meteo, which is free and needs no key.
 
-pdf.js © Mozilla (Apache 2.0). The Doto, Geist and Geist Mono fonts are under the SIL Open Font License.
+pdf.js © Mozilla (Apache 2.0). The Geist and Geist Mono fonts are under the SIL Open Font License.
