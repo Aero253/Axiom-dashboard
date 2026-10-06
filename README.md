@@ -11,11 +11,12 @@ A personal dot-matrix dashboard for cabin crew, in black and white, with one red
   - ◐ reserve
   - · day off
   - ◉ leave
-- **Selected day:** your sectors, report and off-duty times, and your own plans for that day.
+- **Sun and Weather:** your base and roster cities appear by themselves. Tap the pencil to change or remove any of them, or add your own (up to 8). Weather for a new city loads the next time you're online.
+- **Selected day:** your sectors, report and off-duty times, and your own plans for that day. Tap + next to Your plans, enter the time and plan, and tap ✓.
 - **Next 7 days:** your roster for the coming week. Tap a day to open it.
 - **Duty hours:** duty hours over the last 7, 14 and 28 days, and flight hours over 28 days, against the chapter 7 limits used in SL Swap Check. It also shows the rest you'll have before your next report. This is unofficial.
 - **Weather:** live when online, for DMK and your next 7 days of destinations. Offline it keeps the last forecast.
-- **Globe:** drag to turn it. Pinch or spread two fingers to zoom (up to 6×). On a computer, pinch the trackpad, use Ctrl + scroll, or the − and + buttons. Double-tap or tap the zoom level to reset.
+- **Globe:** Thailand's dots are bigger and fully lit, and the rest of the world is dimmed, so home stands out. Zooming in adds more dots across the whole globe, so coastlines stay sharp, and islands like Taiwan, Japan, Hainan and Sri Lanka stay separate from the mainland. When a duty flies out and back on the same route (like DMK › CNX › DMK), it's drawn as one line, and the moving dots run out to CNX and back. Drag to turn it. Pinch or spread two fingers to zoom (up to 6×). On a computer, pinch the trackpad, use Ctrl + scroll, or the − and + buttons. Double-tap or tap the zoom level to reset.
 - **To-do, Shopping and Notes.**
 
 **Duty tools** (Max FDP and Wake-up are on the board at first)
@@ -31,7 +32,7 @@ A personal dot-matrix dashboard for cabin crew, in black and white, with one red
 - **Unit converter:** °C/°F, kg/lb, m/ft, cm/in, km/nm/mi, L/gal, ml/fl oz, km/h/kt/mph.
 
 **Travel & time** (add from Edit layout → Add widgets)
-- **World clock:** UTC, your roster layovers, and any airport you add.
+- **World clock:** UTC, your roster layovers, and any airport you add. Tap + (top right), type an airport code or a city name (any airport in the world, picked from the suggestions), and tap ✓. Tap the pencil to edit: every row, including UTC and roster cities, gets a pencil to change its code and a bin to remove it. Hidden cities can be brought back from the same edit view. Tap ✓ when done.
 - **Time converter:** pick a date, time and zone. It shows UTC, BKK, your layovers and your world clock cities.
 - **Currency:** live rates, saved for offline use.
 - **Expenses:** log layover spending in any currency. The month's total is converted to THB.
@@ -45,10 +46,10 @@ A personal dot-matrix dashboard for cabin crew, in black and white, with one red
 - **Crew bag check:** a reusable packing list.
 - **Nap timer.**
 - **Quick links.**
-- **Water:** daily glasses against a goal. It resets each day.
+- **Water:** daily glasses against a goal. It resets each day. Tap the circle around the count to add one glass (250 ml), and the widget shows how much you've had against the goal. Tapped it by mistake? Tap the last filled dot to take one back. The count starts again at midnight (Bangkok time). Reaching the goal sets off dot fireworks. To change the goal, tap the flag (top right), step the number of glasses with − and +, and tap ✓.
 
 ## Change the layout
-1. Tap **Edit layout**.
+1. Tap the **four-squares** icon (top right).
 2. Change what you like:
    - **Move a widget:** drag the six-dot handle at its top left. This works with a finger or a mouse, and the page scrolls when you reach the edge.
    - **Resize a widget:** drag the dots in its bottom-right corner. Left and right changes how many columns it covers, and up and down changes its height. The content fits the new size as you drag. Clocks and displays grow bigger, the calendar, globe and notes stretch to fill, and anything too big shrinks to fit. Double-tap the corner, or use **Auto height**, to let it size itself again.
@@ -56,7 +57,7 @@ A personal dot-matrix dashboard for cabin crew, in black and white, with one red
    - **↑ ↓** move a widget one step at a time.
    - **Remove** takes a widget off the board. Put it back from **Add widgets**.
    - **Reset layout** returns to the start.
-3. Tap **Done**.
+3. Tap the **tick** to finish.
 
 The layout is saved on each device.
 
@@ -72,8 +73,35 @@ The board picks how many columns to use from the screen width:
 
 Each widget scales its text to its own width.
 
+## Duty alert on the LED ticker
+The ticker turns into a caution light before your next report:
+
+- **Yellow caution:** from **2 h 30 min** before report. The ticker blinks solid yellow on and off every 2 seconds, with hazard-tape stripes, and the badge counts down: "REPORT IN 2H 10M".
+- **Red:** from **35 min** before report. It blinks red about once a second, and the badge shows "GO · 34 MIN".
+
+At report time the alert stops.
+
+The alert flashes on every motion level, Calm included. Only turning on Reduce Motion in your phone's accessibility settings stops the blinking. Then the colours stay on without flashing.
+
+To change the times, search `index.html` for `ALERT_YELLOW = 150, ALERT_RED = 35`. The numbers are minutes before report.
+
+## Icons
+Every button is a round icon. Hover with a mouse to see its name. The top bar, left to right:
+
+| Icon | What it does |
+| --- | --- |
+| Sun or moon | Switches between light and dark theme |
+| Bolt, wave or flat line | Motion level: Max, Full or Calm |
+| Arrow into tray | Back up data |
+| Arrow out of tray | Restore from backup |
+| Four squares | Edit layout (shows a tick while editing) |
+
+Icons, checkboxes and text boxes keep the same tap size when you resize a widget. Only the content scales.
+
+Buttons that wipe something (clear roster, reset layout) turn solid with a ⚠ on the first tap. Tap again within 4 seconds to confirm.
+
 ## Motion
-There are three levels, under ⋯ → **Motion**: **Full** (the default), **Max** and **Calm**. If your phone has Reduce Motion turned on, Axiom starts on Calm until you pick a level yourself.
+There are three levels, under the motion icon in the top bar: **Full** (the default), **Max** and **Calm**. If your phone has Reduce Motion turned on, Axiom starts on Calm until you pick a level yourself.
 
 **Boot-up (Full and Max)**
 - **Splash:** dots fly in from all sides, spell **AXIOM** and "CREW DASHBOARD", then burst away. Tap it to skip.
@@ -109,15 +137,24 @@ The big numbers and headings are drawn as real round dots by the app itself, not
 - **After you upload a new `index.html`:** bump `CACHE_VERSION` in `sw.js` (for example `axiom-v1` → `axiom-v2`).
 
 ## Theme
-⋯ → **Theme** switches between Light and Dark. The first time, it follows your phone's setting. After that it stays on what you picked.
+the sun/moon icon in the top bar switches between Light and Dark. The first time, it follows your phone's setting. After that it stays on what you picked.
 
 ## Data
 Axiom was called Crew Dotboard before. Data saved under the old name carries over, and old backups still restore.
 
-Everything stays on the device. To move it between your phone and computer, use **⋯ → Back up data**, then **⋯ → Restore from backup** on the other device.
+Everything stays on the device. To move it between your phone and computer, use the **download** icon in the top bar, then the **upload** icon on the other device.
 
 On iPhone, the Home Screen app keeps its own data, separate from Safari. Use Back up and Restore if you switch between them.
 
 Countdowns read the eCrew times as Bangkok time. Weather comes from Open-Meteo, which is free and needs no key.
 
-pdf.js © Mozilla (Apache 2.0). The Geist and Geist Mono fonts are under the SIL Open Font License.
+pdf.js © Mozilla (Apache 2.0). The land map and Thailand's shape come from Natural Earth (public domain). The Geist and Geist Mono fonts are under the SIL Open Font License.
+
+
+Airport list: airportsdata (MIT licence) and OurAirports (public domain).
+
+
+## Full screen
+- **iPhone:** add Axiom to your Home Screen (Share, then Add to Home Screen) and open it from there. It runs full screen with no browser bars. iPhone doesn't allow full screen for pages in Safari.
+- **Desktop, Android and iPad:** tap the full-screen button in the top bar. Press Esc or tap it again to leave.
+- There's no scroll bar on any device; scroll with your finger, trackpad, mouse wheel or arrow keys.

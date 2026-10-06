@@ -1,6 +1,6 @@
 // Axiom service worker: keeps the app on the phone so it opens with no signal.
 // After uploading a new index.html, bump CACHE_VERSION so phones fetch the new copy.
-const CACHE_VERSION = 'axiom-v6';
+const CACHE_VERSION = 'axiom-v24';
 const FILES = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
