@@ -182,7 +182,13 @@ body.dragging-now, body.dragging-now *{user-select:none; -webkit-user-select:non
 /* tools */
 .fld{display:grid; gap:4px; min-width:0}
 .fld .inp{width:100%}
-.flds{display:grid; grid-template-columns:repeat(auto-fit,minmax(6.5em,1fr)); gap:8px}
+.flds{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,8.5em),1fr)); gap:8px}
+/* iPhone Safari gives time and date boxes a fixed minimum width that ignores the column, so two of them side by side spill
+   into each other. Drop the native minimum, keep the picker, and let each box fill only its own column. */
+input.inp[type=time], input.inp[type=date], input.inp[type=datetime-local]{-webkit-appearance:none; appearance:none; display:block; min-width:0; max-width:100%; min-height:calc(2.6em + 2px); text-align:left; line-height:1.2}
+input.inp[type=time]::-webkit-date-and-time-value, input.inp[type=date]::-webkit-date-and-time-value, input.inp[type=datetime-local]::-webkit-date-and-time-value{text-align:left; margin:0; min-width:0}
+input.inp[type=time]::-webkit-datetime-edit, input.inp[type=date]::-webkit-datetime-edit{padding:0}
+.fld > .inp, .fld > select.inp{min-width:0}
 .tgl{display:flex; align-items:center; gap:8px; font:500 13px/1.3 var(--f-mono); cursor:pointer}
 .tgl input{width:20px; height:20px; accent-color:var(--ink)}
 .bign{font:900 clamp(40px, 18cqi, 72px)/.9 var(--f-led); font-variant-numeric:tabular-nums}
